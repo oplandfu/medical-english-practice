@@ -299,7 +299,7 @@ const AudioPractice = () => {
                     style={{
                       padding: '8px 12px',
                       backgroundColor: confidenceLevels[currentPhrase] === 'getting-better' ? '#ffc107' : '#fff3cd',
-                      color: 'black',
+                      color: 'white',
                       border: 'none',
                       borderRadius: '4px',
                       cursor: 'pointer'
