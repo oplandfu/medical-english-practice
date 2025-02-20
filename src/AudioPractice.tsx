@@ -1,6 +1,20 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
-const phrases = [
+interface Phrase {
+  english: string;
+  japanese: string;
+  pronunciation: string;
+  category: string;
+  audioPath: string;
+}
+
+type ConfidenceLevel = 'need-practice' | 'getting-better' | 'confident';
+
+type ConfidenceLevels = {
+  [key: number]: ConfidenceLevel;
+};
+
+const phrases: Phrase[] = [
   {
     english: "What brings you to the emergency room today?",
     japanese: "今日は、どうされましたか？",
@@ -18,53 +32,55 @@ const phrases = [
 ];
 
 const AudioPractice = () => {
+  const [activeTab, setActiveTab] = useState<'practice' | 'progress'>('practice');
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentPhrase, setCurrentPhrase] = useState(0);
   const [speed, setSpeed] = useState(1);
   const [isRecording, setIsRecording] = useState(false);
-  const [recordedAudio, setRecordedAudio] = useState(null);
-  const [confidenceLevels, setConfidenceLevels] = useState({});  // Will store confidence for each phrase
-  const mediaRecorderRef = useRef(null);
-  const audioRef = useRef(null);
-  const chunksRef = useRef([]);
-  const [activeTab, setActiveTab] = useState('practice');
+  const [recordedAudio, setRecordedAudio] = useState<string | null>(null);
+  const [confidenceLevels, setConfidenceLevels] = useState<ConfidenceLevels>({});
   
-  const updateConfidence = (level) => {
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const chunksRef = useRef<BlobPart[]>([]);
+
+  const updateConfidence = (level: ConfidenceLevel) => {
     setConfidenceLevels({
       ...confidenceLevels,
       [currentPhrase]: level
     });
   };
-  
-  useEffect(() => {
-    audioRef.current = new Audio();
-    audioRef.current.onended = () => {
-      setIsPlaying(false);
-    };
-  }, []);
 
   useEffect(() => {
+    const audio = new Audio();
+    audio.onended = () => {
+      setIsPlaying(false);
+    };
+    audioRef.current = audio;
+
     return () => {
-      if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
-        mediaRecorderRef.current.stop();
-        mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
+      const recorder = mediaRecorderRef.current;
+      if (recorder?.state === 'recording') {
+        recorder.stop();
+        recorder.stream.getTracks().forEach((track: MediaStreamTrack) => track.stop());
       }
       if (recordedAudio) {
         URL.revokeObjectURL(recordedAudio);
       }
     };
-  }, [currentPhrase]);
+  }, []);
 
   const playAudio = () => {
-    if (!audioRef.current) return;
+    const audio = audioRef.current;
+    if (!audio) return;
 
     if (isPlaying) {
-      audioRef.current.pause();
+      audio.pause();
       setIsPlaying(false);
     } else {
-      audioRef.current.src = phrases[currentPhrase].audioPath;
-      audioRef.current.playbackRate = speed;
-      audioRef.current.play().catch(e => console.error('Error playing audio:', e));
+      audio.src = phrases[currentPhrase].audioPath;
+      audio.playbackRate = speed;
+      audio.play().catch((e: Error) => console.error('Error playing audio:', e));
       setIsPlaying(true);
     }
   };
@@ -72,29 +88,31 @@ const AudioPractice = () => {
   const toggleRecording = async () => {
     if (isRecording) {
       setIsRecording(false);
-      if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
-        mediaRecorderRef.current.stop();
-        mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
+      const recorder = mediaRecorderRef.current;
+      if (recorder?.state === 'recording') {
+        recorder.stop();
+        recorder.stream.getTracks().forEach((track: MediaStreamTrack) => track.stop());
       }
     } else {
       try {
         chunksRef.current = [];
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        mediaRecorderRef.current = new MediaRecorder(stream);
+        const mediaRecorder = new MediaRecorder(stream);
+        mediaRecorderRef.current = mediaRecorder;
 
-        mediaRecorderRef.current.ondataavailable = (e) => {
+        mediaRecorder.ondataavailable = (e: BlobEvent) => {
           if (e.data.size > 0) {
             chunksRef.current.push(e.data);
           }
         };
 
-        mediaRecorderRef.current.onstop = () => {
+        mediaRecorder.onstop = () => {
           const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
           const url = URL.createObjectURL(blob);
           setRecordedAudio(url);
         };
 
-        mediaRecorderRef.current.start();
+        mediaRecorder.start();
         setIsRecording(true);
       } catch (err) {
         console.error('Error accessing microphone:', err);
@@ -102,7 +120,24 @@ const AudioPractice = () => {
       }
     }
   };
-  
+
+  const handleNavigation = (direction: 'prev' | 'next') => {
+    const audio = audioRef.current;
+    if (audio) {
+      audio.pause();
+      setIsPlaying(false);
+    }
+    if (isRecording) {
+      toggleRecording();
+    }
+    setRecordedAudio(null);
+    if (direction === 'prev' && currentPhrase > 0) {
+      setCurrentPhrase(currentPhrase - 1);
+    } else if (direction === 'next' && currentPhrase < phrases.length - 1) {
+      setCurrentPhrase(currentPhrase + 1);
+    }
+  };
+
   return (
     <div style={{ padding: '20px', maxWidth: '800px', margin: '0 auto' }}>
       <div style={{ 
@@ -164,19 +199,7 @@ const AudioPractice = () => {
           
           <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', flexWrap: 'wrap', maxWidth: '100%' }}>
             <button 
-              onClick={() => {
-                if (currentPhrase > 0) {
-                  if (isPlaying) {
-                    audioRef.current.pause();
-                    setIsPlaying(false);
-                  }
-                  if (isRecording) {
-                    toggleRecording();
-                  }
-                  setRecordedAudio(null);
-                  setCurrentPhrase(currentPhrase - 1);
-                }
-              }}
+              onClick={() => handleNavigation('prev')}
               style={{
                 padding: '8px 12px',
                 backgroundColor: currentPhrase === 0 ? '#cccccc' : '#007bff',
@@ -207,8 +230,9 @@ const AudioPractice = () => {
             <button 
               onClick={() => {
                 setSpeed(speed === 1 ? 0.75 : 1);
-                if (isPlaying) {
-                  audioRef.current.playbackRate = speed === 1 ? 0.75 : 1;
+                const audio = audioRef.current;
+                if (audio) {
+                  audio.playbackRate = speed === 1 ? 0.75 : 1;
                 }
               }}
               style={{
@@ -275,7 +299,7 @@ const AudioPractice = () => {
                     style={{
                       padding: '8px 12px',
                       backgroundColor: confidenceLevels[currentPhrase] === 'getting-better' ? '#ffc107' : '#fff3cd',
-                      color: 'white',
+                      color: 'black',
                       border: 'none',
                       borderRadius: '4px',
                       cursor: 'pointer'
@@ -301,19 +325,7 @@ const AudioPractice = () => {
             )}
             
             <button 
-              onClick={() => {
-                if (currentPhrase < phrases.length - 1) {
-                  if (isPlaying) {
-                    audioRef.current.pause();
-                    setIsPlaying(false);
-                  }
-                  if (isRecording) {
-                    toggleRecording();
-                  }
-                  setRecordedAudio(null);
-                  setCurrentPhrase(currentPhrase + 1);
-                }
-              }}
+              onClick={() => handleNavigation('next')}
               style={{
                 padding: '8px 12px',
                 backgroundColor: currentPhrase === phrases.length - 1 ? '#cccccc' : '#007bff',
