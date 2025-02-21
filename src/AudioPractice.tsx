@@ -39,7 +39,10 @@ const AudioPractice = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [recordedAudio, setRecordedAudio] = useState<string | null>(null);
   const [confidenceLevels, setConfidenceLevels] = useState<ConfidenceLevels>({});
-  
+  const [showTips, setShowTips] = useState(() => {
+    // Check if user has seen tips before
+    return !localStorage.getItem('hasSeenRecordingTips');
+  });
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<BlobPart[]>([]);
@@ -247,19 +250,71 @@ const AudioPractice = () => {
               {speed === 0.75 ? 'Normal Speed' : 'Slow Speed'}
             </button>
 
-            <button 
-              onClick={toggleRecording}
-              style={{
-                padding: '8px 12px',
-                backgroundColor: isRecording ? '#dc3545' : '#6c757d',
-                color: 'white',
-                border: 'none',
-                borderRadius: '4px',
-                cursor: 'pointer'
-              }}
-            >
-              {isRecording ? 'Stop Recording' : 'Record'}
-            </button>
+            <div>
+  {showTips && (
+    <div style={{ 
+      marginBottom: '10px', 
+      fontSize: '14px', 
+      color: '#666',
+      backgroundColor: '#f8f9fa',
+      padding: '10px',
+      borderRadius: '4px',
+      position: 'relative'
+    }}>
+      <button 
+        onClick={() => {
+          setShowTips(false);
+          localStorage.setItem('hasSeenRecordingTips', 'true');
+        }}
+        style={{
+          position: 'absolute',
+          top: '5px',
+          right: '5px',
+          border: 'none',
+          background: 'none',
+          cursor: 'pointer',
+          fontSize: '16px'
+        }}
+      >
+        ×
+      </button>
+      <p style={{ marginBottom: '5px' }}>💡 Recording Tips / 録音について:</p>
+      <ul style={{ margin: '0', paddingLeft: '20px' }}>
+        <li>録音はあなたの端末内に、このアプリ使用中にのみ一時的に保存されます。</li>
+        <li>フレーズ、ページを移動したり、アプリを閉じると自動的に消去されます。</li>
+        <li>何度でも練習できます！</li>
+      </ul>
+    </div>
+  )}
+  {!showTips && (
+    <button
+      onClick={() => setShowTips(true)}
+      style={{
+        border: 'none',
+        background: 'none',
+        color: '#666',
+        fontSize: '12px',
+        cursor: 'pointer',
+        marginBottom: '5px'
+      }}
+    >
+      💡 Show recording tips
+    </button>
+  )}
+  <button 
+    onClick={toggleRecording}
+    style={{
+      padding: '8px 12px',
+      backgroundColor: isRecording ? '#dc3545' : '#6c757d',
+      color: 'white',
+      border: 'none',
+      borderRadius: '4px',
+      cursor: 'pointer'
+    }}
+  >
+    {isRecording ? 'Stop Recording' : 'Record'}
+  </button>
+</div>
 
             {recordedAudio && (
               <>
