@@ -15,21 +15,91 @@ type ConfidenceLevels = {
 };
 
 const phrases: Phrase[] = [
-  {
-    english: "What brings you to the emergency room today?",
-    japanese: "今日は、どうされましたか？",
-    pronunciation: "what BRINGS you to the ee-MUR-jun-see ROOM to-DAY",
-    category: "Initial Assessment",
-    audioPath: "/audio/er-question-1.mp3"
-  },
-  {
-    english: "Are you having trouble breathing?",
-    japanese: "呼吸は苦しいですか？",
-    pronunciation: "are you HAV-ing TRUH-bul BREE-thing",
-    category: "Initial Assessment",
-    audioPath: "/audio/breathing-question.mp3"
-  }
-];
+    {
+      english: "What brings you to the emergency room today?",
+      japanese: "今日は、どうされましたか？",
+      pronunciation: "what BRINGS you to the ee-MUR-jun-see ROOM to-DAY",
+      category: "Initial Assessment",
+      audioPath: "/audio/er-question-1.mp3"
+    },
+    {
+      english: "Are you having trouble breathing?",
+      japanese: "呼吸は苦しいですか？",
+      pronunciation: "are you HAV-ing TRUH-bul BREE-thing",
+      category: "Initial Assessment",
+      audioPath: "/audio/breathing-question.mp3"
+    },
+    {
+      english: "Can you rate your pain from 1 to 10?",
+      japanese: "痛みを1から10までの段階で表すと、どのくらいですか？",
+      pronunciation: "can you RATE your PAIN from ONE to TEN",
+      category: "Pain Assessment",
+      audioPath: "/audio/pain-rating.mp3"
+    },
+    {
+      english: "Where is the pain? Can you point to it?",
+      japanese: "痛みはどこですか？指さしていただけますか？",
+      pronunciation: "WHERE is the PAIN? can you POINT to it?",
+      category: "Pain Assessment",
+      audioPath: "/audio/pain-location.mp3"
+    },
+    {
+      english: "When did the pain start?",
+      japanese: "いつから痛みが始まりましたか？",
+      pronunciation: "WHEN did the PAIN START?",
+      category: "Pain Assessment",
+      audioPath: "/audio/pain-onset.mp3"
+    },
+    {
+      english: "Have you felt fever or chills?",
+      japanese: "熱や寒気を感じましたか？",
+      pronunciation: "have you FELT FEE-ver or CHILLS?",
+      category: "Vital Signs/General Condition",
+      audioPath: "/audio/fever-chills.mp3"
+    },
+    {
+      english: "How is your breathing? Any difficulty?",
+      japanese: "呼吸の状態はいかがですか？何か困難はありますか？",
+      pronunciation: "HOW is your BREE-thing? ANY diff-i-CUL-ty?",
+      category: "Vital Signs/General Condition",
+      audioPath: "/audio/breathing-difficulty.mp3"
+    },
+    {
+      english: "Have you felt dizzy or lightheaded?",
+      japanese: "めまいやふらつきを感じましたか？",
+      pronunciation: "have you felt DIZ-zy or light-HEAD-ed?",
+      category: "Vital Signs/General Condition",
+      audioPath: "/audio/dizziness.mp3"
+    },
+    {
+      english: "Do you have any allergies to medications?",
+      japanese: "薬に対するアレルギーはありますか？",
+      pronunciation: "do you have ANY AL-ler-gies to med-i-CA-tions?",
+      category: "Medical History",
+      audioPath: "/audio/medication-allergies.mp3"
+    },
+    {
+      english: "Are you currently taking any medications?",
+      japanese: "現在、何か薬を服用していますか？",
+      pronunciation: "are you CUR-rent-ly TAK-ing ANY med-i-CA-tions?",
+      category: "Medical History",
+      audioPath: "/audio/current-medications.mp3"
+    },
+    {
+      english: "Have you had any similar symptoms before?",
+      japanese: "以前にも同じような症状がありましたか？",
+      pronunciation: "have you HAD any SIM-i-lar SYMP-toms be-FORE?",
+      category: "Medical History",
+      audioPath: "/audio/previous-symptoms.mp3"
+    },
+    {
+      english: "When was the last time you ate or drank anything?",
+      japanese: "最後に食べたり飲んだりしたのはいつですか？",
+      pronunciation: "WHEN was the LAST TIME you ATE or DRANK ANY-thing?",
+      category: "Current Status",
+      audioPath: "/audio/last-meal.mp3"
+    }
+  ];
 
 const AudioPractice = () => {
   const [activeTab, setActiveTab] = useState<'practice' | 'progress'>('practice');
