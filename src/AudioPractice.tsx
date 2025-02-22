@@ -467,9 +467,151 @@ const AudioPractice = () => {
         </div>
       )}
 
-      {activeTab === 'progress' && (
-        <div>Progress Report Coming Soon</div>
-      )}
+{activeTab === 'progress' && (
+  <div style={{ 
+    backgroundColor: 'white', 
+    padding: '20px',
+    borderRadius: '8px',
+    boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+  }}>
+    {/* Progress Graph */}
+    <div style={{ 
+      marginBottom: '30px',
+      backgroundColor: '#f8f9fa',
+      padding: '20px',
+      borderRadius: '8px'
+    }}>
+      <h3 style={{ marginBottom: '15px', color: '#444' }}>Progress Distribution</h3>
+      <div style={{ 
+        display: 'flex',
+        height: '24px',
+        backgroundColor: 'white',
+        borderRadius: '4px',
+        overflow: 'hidden',
+        marginBottom: '10px'
+      }}>
+        <div style={{
+          width: `${(Object.values(confidenceLevels).filter(level => level === 'confident').length / phrases.length) * 100}%`,
+          backgroundColor: '#28a745',
+          borderRight: '2px solid white'
+        }}/>
+        <div style={{
+          width: `${(Object.values(confidenceLevels).filter(level => level === 'getting-better').length / phrases.length) * 100}%`,
+          backgroundColor: '#ffc107',
+          borderRight: '2px solid white'
+        }}/>
+        <div style={{
+          width: `${(Object.values(confidenceLevels).filter(level => level === 'need-practice').length / phrases.length) * 100}%`,
+          backgroundColor: '#dc3545'
+        }}/>
+      </div>
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'space-between',
+        fontSize: '14px',
+        color: '#666'
+      }}>
+        <div>
+          <span style={{ color: '#28a745' }}>■</span> Confident
+        </div>
+        <div>
+          <span style={{ color: '#ffc107' }}>■</span> Getting Better
+        </div>
+        <div>
+          <span style={{ color: '#dc3545' }}>■</span> Need Practice
+        </div>
+      </div>
+    </div>
+
+    {/* Phrases by Confidence Level */}
+    <div style={{ marginBottom: '30px' }}>
+      <h3 style={{ marginBottom: '15px', color: '#444' }}>Phrases by Confidence Level</h3>
+      
+      <div style={{ 
+        backgroundColor: '#f8d7da',
+        padding: '15px',
+        borderRadius: '8px',
+        marginBottom: '10px'
+      }}>
+        <h4 style={{ color: '#dc3545', marginBottom: '10px' }}>
+          Need Practice ({Object.values(confidenceLevels).filter(level => level === 'need-practice').length})
+        </h4>
+        <ul style={{ margin: 0, paddingLeft: '20px', color: '#666' }}>
+          {phrases.filter((_, index) => confidenceLevels[index] === 'need-practice')
+            .map(phrase => (
+              <li key={phrase.english}>{phrase.english}</li>
+            ))}
+        </ul>
+      </div>
+      
+      <div style={{ 
+        backgroundColor: '#fff3cd',
+        padding: '15px',
+        borderRadius: '8px',
+        marginBottom: '10px'
+      }}>
+        <h4 style={{ color: '#ffc107', marginBottom: '10px' }}>
+          Getting Better ({Object.values(confidenceLevels).filter(level => level === 'getting-better').length})
+        </h4>
+        <ul style={{ margin: 0, paddingLeft: '20px', color: '#666' }}>
+          {phrases.filter((_, index) => confidenceLevels[index] === 'getting-better')
+            .map(phrase => (
+              <li key={phrase.english}>{phrase.english}</li>
+            ))}
+        </ul>
+      </div>
+      
+      <div style={{ 
+        backgroundColor: '#d4edda',
+        padding: '15px',
+        borderRadius: '8px'
+      }}>
+        <h4 style={{ color: '#28a745', marginBottom: '10px' }}>
+          Confident ({Object.values(confidenceLevels).filter(level => level === 'confident').length})
+        </h4>
+        <ul style={{ margin: 0, paddingLeft: '20px', color: '#666' }}>
+          {phrases.filter((_, index) => confidenceLevels[index] === 'confident')
+            .map(phrase => (
+              <li key={phrase.english}>{phrase.english}</li>
+            ))}
+        </ul>
+      </div>
+    </div>
+
+    {/* Category Progress */}
+    <div>
+      <h3 style={{ marginBottom: '15px', color: '#444' }}>Progress by Category</h3>
+      {Array.from(new Set(phrases.map(p => p.category))).map(category => {
+        const phrasesInCategory = phrases.filter(p => p.category === category);
+        const confidentInCategory = phrasesInCategory.filter((_, idx) => 
+          confidenceLevels[phrases.findIndex(p => p === phrasesInCategory[idx])] === 'confident'
+        ).length;
+        
+        return (
+          <div key={category} style={{ marginBottom: '10px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
+              <span>{category} ({phrasesInCategory.length} phrases)</span>
+              <span>{confidentInCategory} confident</span>
+            </div>
+            <div style={{ 
+              height: '8px',
+              backgroundColor: '#e9ecef',
+              borderRadius: '4px',
+              overflow: 'hidden'
+            }}>
+              <div style={{
+                width: `${(confidentInCategory / phrasesInCategory.length) * 100}%`,
+                height: '100%',
+                backgroundColor: '#28a745',
+                borderRadius: '4px'
+              }}/>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  </div>
+)}
     </div>
   );
 };
