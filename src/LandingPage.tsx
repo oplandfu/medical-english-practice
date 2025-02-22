@@ -67,17 +67,17 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => (
             color: '#666',
             marginBottom: '15px'
           }}>
-            <li style={{ marginBottom: '16px' }}>
+            <li style={{ marginBottom: '14px' }}>
               Listen to the example phrase
               <br />
               <span style={{ fontSize: '0.9em' }}>モデル音声を聞く</span>
             </li>
-            <li style={{ marginBottom: '16px' }}>
+            <li style={{ marginBottom: '14px' }}>
               Adjust speed if needed
               <br />
               <span style={{ fontSize: '0.9em' }}>必要に応じて速度を調整する</span>
             </li>
-            <li style={{ marginBottom: '16px' }}>
+            <li style={{ marginBottom: '14px' }}>
               Record your voice and compare
               <br />
               <span style={{ fontSize: '0.9em' }}>自分の声を録音して比較する</span>
@@ -102,12 +102,12 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => (
             color: '#666',
             marginBottom: '15px'
           }}>
-            <li style={{ marginBottom: '16px' }}>
+            <li style={{ marginBottom: '14px' }}>
               See your confidence distribution
               <br />
               <span style={{ fontSize: '0.9em' }}>自信度の分布を確認する</span>
             </li>
-            <li style={{ marginBottom: '16px' }}>
+            <li style={{ marginBottom: '14px' }}>
               Review phrases by confidence level
               <br />
               <span style={{ fontSize: '0.9em' }}>自信度別にフレーズを確認する</span>
@@ -141,12 +141,12 @@ const LandingPage: React.FC<LandingPageProps> = ({ onStart }) => (
               <br />
               <span style={{ fontSize: '0.9em' }}>録音はあなたの端末内に、このアプリ使用中にのみ一時的に保存され、再録音、ページ移動、アプリを閉じる際に自動的に消去されます。</span>
             </li>
-            <li style={{ marginBottom: '18px' }}>
+            <li style={{ marginBottom: '16px' }}>
               Record multiple times to improve
               <br />
               <span style={{ fontSize: '0.9em' }}>納得のいくまで、何度でも練習してください。</span>
             </li>
-            <li style={{ marginBottom: '18px' }}>
+            <li style={{ marginBottom: '16px' }}>
               Update your confidence level after each practice
               <br />
               <span style={{ fontSize: '0.9em' }}>自己評価は毎回更新してください。</span>
