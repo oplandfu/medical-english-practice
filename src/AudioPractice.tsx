@@ -157,30 +157,45 @@ const AudioPractice = () => {
   const toggleRecording = async () => {
     if (isRecording) {
       setIsRecording(false);
-      const recorder = mediaRecorderRef.current;
-      if (recorder?.state === 'recording') {
-        recorder.stop();
-        recorder.stream.getTracks().forEach((track: MediaStreamTrack) => track.stop());
+      if (mediaRecorderRef.current?.state === 'recording') {
+        mediaRecorderRef.current.stop();
+        mediaRecorderRef.current.stream.getTracks().forEach(track => track.stop());
       }
     } else {
       try {
         chunksRef.current = [];
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        const mediaRecorder = new MediaRecorder(stream);
+        const mediaRecorder = new MediaRecorder(stream, {
+          mimeType: 'audio/mp4' // Try this first
+        });
         mediaRecorderRef.current = mediaRecorder;
-
-        mediaRecorder.ondataavailable = (e: BlobEvent) => {
+  
+        mediaRecorder.ondataavailable = (e) => {
           if (e.data.size > 0) {
             chunksRef.current.push(e.data);
           }
         };
-
+  
         mediaRecorder.onstop = () => {
-          const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
+          // Try different formats until one works
+          const mimeTypes = ['audio/mp4', 'audio/webm', 'audio/ogg'];
+          let blob;
+          for (const type of mimeTypes) {
+            try {
+              blob = new Blob(chunksRef.current, { type });
+              break;
+            } catch (e) {
+              console.log(`Failed to create ${type} blob:`, e);
+            }
+          }
+          if (!blob) {
+            console.error('Could not create audio blob');
+            return;
+          }
           const url = URL.createObjectURL(blob);
           setRecordedAudio(url);
         };
-
+  
         mediaRecorder.start();
         setIsRecording(true);
       } catch (err) {
@@ -256,7 +271,7 @@ const AudioPractice = () => {
             {currentPhrase + 1} of {phrases.length}
           </div>
           
-          <p style={{ fontSize: '18px', marginBottom: '10px' }}>
+          <p style={{ fontSize: '20px', marginBottom: '10px',fontWeight:'bold' }}>
             {phrases[currentPhrase].english}
           </p>
           <p style={{ marginBottom: '10px' }}>
